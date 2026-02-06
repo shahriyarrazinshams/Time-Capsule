@@ -1,0 +1,959 @@
+<!DOCTYPE html>  
+<html lang="bn">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>Across Time | Shahriyar Razin Shams</title>  
+  
+<link rel="preconnect" href="https://fonts.googleapis.com">  
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>  
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Noto+Serif+Bengali:wght@400;500;600&family=Baloo+Da+2:wght@500;600&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">  
+  
+<style>  
+:root{  
+  --bg:#05070c;  
+  --text:#f2f2f2;  
+  --muted:#9aa0a6;  
+  --accent:#6ea8ff;  
+  --glow: rgba(110, 168, 255, 0.2);
+}  
+*{margin:0;padding:0;box-sizing:border-box;}  
+body{  
+  background:radial-gradient(circle at top,#0b1020,#000);  
+  color:var(--text);  
+  font-family:'Hind Siliguri',system-ui;  
+  overflow-x: hidden;
+}
+
+/* START OVERLAY */
+#music-gate {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 1.5s ease;
+}
+#music-gate.hide { opacity: 0; pointer-events: none; }
+.gate-btn {
+  padding: 18px 45px;
+  background: none;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: 'Baloo Da 2', cursive;
+  font-size: 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: 0.4s;
+  box-shadow: 0 0 20px var(--glow);
+}
+
+/* HERO */
+.hero{ height: 70vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
+.hero h1{ font-family: 'Tiro Bangla', serif; font-size: 36px; margin-bottom: 15px; background: linear-gradient(to bottom, #fff, #888); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.hero p{ font-size: 15px; color: var(--muted); letter-spacing: 1px;}
+
+/* PHOTOS */  
+.photos-section{ padding:40px 20px; display:flex; justify-content:center; }  
+.photos{ width:100%; max-width:900px; display:grid; grid-template-columns:1fr 1fr; gap:30px; }  
+.photo-card{ display:flex; flex-direction:column; align-items:center; }  
+.year{ font-family:'Baloo Da 2',cursive; font-size:13px; color:var(--accent); margin-bottom:15px; letter-spacing: 3px; }  
+.frame{ width:100%; max-width:260px; height:340px; border-radius:22px; background:#0c0c0c; border:1px solid rgba(255,255,255,0.08); overflow:hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }  
+.frame img{ width:100%; height:100%; object-fit:cover; }  
+.future{ font-size:80px; color:rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; height: 100%; font-family: serif; }  
+
+
+/* TEXT CONTENT */
+.text-section{ max-width:850px; margin:0 auto; padding:40px 24px; }  
+p{ font-size:17px; line-height:2.1; color:#ccc; margin-bottom:30px; font-weight: 300; }  
+.q{ font-family:'Noto Serif Bengali',serif; border-left:3px solid var(--accent); padding-left:25px; margin:45px 0; font-size:18.5px; color:#fff; line-height: 1.8; }  
+.sign{ font-family:'Tiro Bangla',serif; margin-top:80px; font-size:17px; color:var(--muted); text-align: right; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 20px;}  
+
+/* MEMORY GRID */  
+.memory-section{ max-width:1100px; margin:120px auto; padding:0 24px; }  
+.memory-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:25px; }  
+.memory-frame{ aspect-ratio:4/3; border-radius:20px; overflow:hidden; background:#000; border: 1px solid rgba(255,255,255,0.05); cursor: pointer;}  
+.memory-frame img{ width:100%; height:100%; object-fit:contain; filter:grayscale(100%) contrast(1.1); transition: 1s ease; }  
+.memory-frame.active img, .memory-frame:hover img{ filter:grayscale(0%) contrast(1); transform: scale(1.05); }  
+.photo-meta{ font-size:12px; color:var(--muted); margin-top:12px; text-align: center; line-height: 1.6; font-weight: 400;}
+
+/* FONT FIXES */
+.year, .memory-title, .friends-message h3 { font-family:'Baloo Da 2', cursive !important; }
+.text-section p, .caption, .memory-subtitle, .hero p { font-family:'Hind Siliguri', system-ui !important; }
+.q { font-family:'Noto Serif Bengali', serif !important; }
+
+/* Identity Gate Styles */
+#identity-gate {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #05070c; /* Dark Background */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  transition: transform 1s cubic-bezier(0.85, 0, 0.15, 1);
+}
+
+/* Hide Gate after unlock */
+#identity-gate.unlocked { transform: translateY(-100%); }
+
+.gate-card {
+  background: rgba(255, 255, 255, 0.03);
+  padding: 40px 30px;
+  border-radius: 25px;
+  border: 1px solid rgba(110, 168, 255, 0.1);
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.gate-card h2 { color: #6ea8ff; margin-bottom: 25px; font-family: sans-serif; }
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: white;
+  outline: none;
+}
+
+.gate-btn {
+  width: 100%;
+  padding: 15px;
+  background: #6ea8ff;
+  border: none;
+  color: #000;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.gate-btn:hover { opacity: 0.8; transform: scale(0.98); }
+
+/* কাস্টম অ্যালার্ট বক্স স্টাইল */
+.custom-alert {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(11, 16, 32, 0.95);
+  color: #6ea8ff;
+  padding: 15px 30px;
+  border-radius: 12px;
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 20px var(--glow);
+  z-index: 20000;
+  font-family: 'Hind Siliguri', sans-serif;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from { top: -100px; opacity: 0; }
+  to { top: 20px; opacity: 1; }
+}
+
+/* --- Responsive Adjustments Fix --- */
+
+/* ১. রুট কন্টেইনার এবং গেট অ্যাডজাস্টমেন্ট */
+#identity-gate {
+    width: 100vw;
+    height: 100vh;
+    padding: 20px;
+    display: flex; /* জাভাস্ক্রিপ্ট দ্বারা নিয়ন্ত্রিত হলেও এখানে ফ্লেক্স রাখা ভালো */
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+}
+
+/* ২. ফর্ম বক্সকে সব স্ক্রিনের জন্য মানানসই করা */
+.gate-content {
+    width: 95%; /* মোবাইলের জন্য */
+    max-width: 450px; /* পিসি বা বড় স্ক্রিনের জন্য লিমিট */
+    padding: 2rem;
+    background: rgba(11, 16, 32, 0.9);
+    border: 1px solid var(--accent);
+    border-radius: 20px;
+    box-shadow: 0 0 30px var(--glow);
+    text-align: center;
+}
+
+/* ৩. ইনপুট ফিল্ডগুলো যাতে স্ক্রিনের বাইরে না যায় */
+.gate-content input, 
+.gate-content select, 
+.gate-btn {
+    width: 100%;
+    max-width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    font-size: 16px; /* মোবাইলে জুম হওয়া আটকাতে */
+}
+
+/* ৪. বড় স্ক্রিন বা টিভির জন্য টেক্সট সাইজ ঠিক করা */
+@media (min-width: 1200px) {
+    .gate-content h2 {
+        font-size: 2rem;
+    }
+    .gate-content {
+        max-width: 500px;
+    }
+}
+
+/* ৫. কাস্টম পপআপ রেসপনসিভ করা */
+.custom-alert {
+    width: auto;
+    max-width: 90%;
+    text-align: center;
+    font-size: 14px;
+    padding: 12px 20px;
+}
+
+/* ৬. ইমেজ বা লোগো থাকলে সেটির অটো রিসাইজ */
+.gate-content img {
+    max-width: 80px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+/* ড্রপডাউন (Social Media Platform) থিম ফিক্স */
+#social-platform {
+    background: rgba(11, 16, 32, 0.9); /* মেইন থিমের ডার্ক ব্লু */
+    color: #6ea8ff; /* অ্যাকসেন্ট কালার */
+    border: 1px solid var(--accent);
+    border-radius: 10px;
+    padding: 12px;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px var(--glow);
+    appearance: none; /* ডিফল্ট ব্রাউজার স্টাইল রিমুভ */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    font-family: 'Hind Siliguri', sans-serif;
+}
+
+/* --- Input & Select Box Glowing Theme Fix --- */
+
+/* ১. সব ইনপুট এবং সিলেক্ট বক্সের কমন স্টাইল */
+.gate-card input, 
+#social-platform,
+#years-passed {
+    width: 100% !important;
+    background: rgba(11, 16, 32, 0.6) !important;
+    color: #f2f2f2 !important;
+    border: 1px solid rgba(110, 168, 255, 0.2) !important;
+    border-radius: 15px !important;
+    padding: 15px 20px !important;
+    font-size: 15px !important;
+    margin-bottom: 20px !important;
+    outline: none !important;
+    transition: all 0.3s ease !important;
+    font-family: 'Hind Siliguri', sans-serif !important;
+    display: block !important;
+}
+
+/* ২. ফোকাস করলে গ্লোয়িং ইফেক্ট (ছবির মতো নীল আভা) */
+.gate-card input:focus, 
+#social-platform:focus,
+#years-passed:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 15px var(--glow), inset 0 0 5px var(--glow) !important;
+    background: rgba(11, 16, 32, 0.8) !important;
+}
+
+/* ৩. ড্রপডাউন কন্টেইনার এবং কাস্টম অ্যারো ফিক্স */
+.platform-container {
+    position: relative;
+    width: 100%;
+}
+
+#social-platform {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    cursor: pointer;
+    padding-right: 40px !important; /* অ্যারোর জন্য জায়গা */
+}
+
+/* ৪. কাস্টম অ্যারো - একদম সঠিক পজিশনে */
+.platform-container::after {
+    content: '▼';
+    font-size: 15px;
+    color: var(--accent);
+    position: absolute;
+    right: 20px;
+    top: 50%; /* বক্সের উচ্চতা অনুযায়ী ঠিক মাঝখানে */
+    transform: translateY(-50%);
+    pointer-events: none;
+    text-shadow: 0 0 5px var(--glow);
+}
+
+/* ৫. ড্রপডাউন ওপেন করলে অপশন লিস্টের থিম */
+#social-platform option {
+    background: #0b1020 !important;
+    color: #fff !important;
+}
+
+/* ৬. প্রবেশ করুন বাটন গ্লোয়িং ডিজাইন */
+.gate-btn {
+    width: 100% !important;
+    background: #6ea8ff !important;
+    box-shadow: 0 4px 15px rgba(110, 168, 255, 0.4) !important;
+    color: #000 !important;
+    font-weight: 600 !important;
+    border-radius: 15px !important;
+    padding: 15px !important;
+    border: none !important;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.gate-btn:hover {
+    transform: scale(0.98);
+    box-shadow: 0 0 20px var(--accent);
+}
+
+/* --- Responsive Footer Fix --- */
+.main-footer {
+    width: 100%;
+    padding: 40px 20px;
+    background: rgba(5, 7, 12, 0.9);
+    border-top: 1px solid rgba(110, 168, 255, 0.1);
+    margin-top: 100px;
+    text-align: center;
+}
+
+.footer-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.main-footer p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 0; /* ডিফল্ট মার্জিন রিমুভ */
+    letter-spacing: 1px;
+}
+
+.footer-links span {
+    font-size: 12px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    opacity: 0.7;
+}
+
+/* বড় স্ক্রিন (Laptop/PC/TV) এর জন্য অ্যাডজাস্টমেন্ট */
+@media (min-width: 768px) {
+    .footer-content {
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    
+    .main-footer {
+        padding: 30px 50px;
+    }
+}
+
+/* টিভির জন্য ফন্ট সাইজ একটু বড় করা */
+@media (min-width: 1500px) {
+    .main-footer p {
+        font-size: 18px;
+    }
+}
+
+
+</style>  
+</head>  
+  
+<body>  
+
+<body>  
+<script>
+  // পেজ রেন্ডার হওয়ার আগেই চেক করবে
+  if (!localStorage.getItem('lastVisit')) {
+      document.write('<style>#identity-gate { display: flex !important; }</style>');
+  }
+</script>
+
+
+<div id="identity-gate">
+  <div class="gate-card">
+    <h2>পরিচয় নিশ্চিত করুন</h2>
+    
+    <input type="text" id="visitor-name" placeholder="আপনার নাম লিখুন..." required>
+    
+    <div class="platform-container">
+    <select id="social-platform">
+        <option value="" disabled selected>সোশ্যাল মিডিয়া প্ল্যাটফর্ম</option>
+        <option value="Facebook">Facebook</option>
+        <option value="WhatsApp">WhatsApp</option>
+        <option value="Instagram">Instagram</option>
+        <option value="Messenger">Messenger</option>
+        <option value="Telegram">Telegram</option>
+        <option value="Twitter (X)">Twitter(X)</option>
+        <option value="Discord">Discord</option>
+        <option value="Threads">Threads</option>
+        <option value="UpScrolled">UpScrolled</option>
+        <option value="Phone Number">Phone Number</option>
+    </select>
+</div>
+
+    
+    <input type="text" id="social-id" placeholder="ইউজার আইডি বা ফোন নম্বর" required>
+    <input type="number" id="years-passed" placeholder=" কত বছর পর স্মৃতিতে ফিরলে বন্ধু? (উদা:১০)" required>
+
+    
+    <button class="gate-btn" onclick="submitGate()">প্রবেশ করুন</button>
+  </div>
+</div>
+
+
+<div id="music-gate">
+  <button class="gate-btn" onclick="startEverything()">স্মৃতির জানালায় স্বাগতম</button>
+  <p style="margin-top:25px; color:#444; font-size:13px; letter-spacing:1px;">মিউজিকসহ অভিজ্ঞতা নিতে বাটনে চাপ দিন</p>
+</div>
+
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://github.com/shahriyarrazinshams/Background-Music/raw/refs/heads/main/Emotional_background_sad_music.mp3" type="audio/mpeg">
+</audio>
+
+<section class="hero">
+  <h1>দশ বছর পর<br>যদি সব ভুলে গিয়ে থাকো...<br>তবে এই লেখাটা তোমাকে কাঁদাতে পারে।</h1>
+  <p>কিছু মানুষ যারা ছিল... কিছু গল্প যা হারিয়ে গেছে।</p>
+</section>
+  
+<section class="photos-section">  
+  <div class="photos">  
+    <div class="photo-card">  
+      <div class="year">2026</div>  
+      <div class="frame">  
+        <img src="https://drive.google.com/thumbnail?id=1Jsif8x8--pFg-AhTzyct2TdcS-FsV9uF&sz=w2000" referrerpolicy="no-referrer">  
+      </div>
+<div class="caption">এইটা আমি — এখন</div>   
+    </div>  
+    <div class="photo-card">  
+      <div class="year">2036 • FUTURE</div>  
+      <div class="frame">  
+        <div class="future">?</div>  
+      </div>  
+      <div class="caption">এইটাও আমি — তবে জানিনা কেমন দেখতে</div>  
+    </div>  
+  </div>  
+</section>  
+  
+<section class="text-section">  
+<p>প্রিয় শামস্ (২০৩৬),</p>
+<p>জানি না এই ১০ বছরে তোমার জীবন থেকে কতটা বসন্ত হারিয়ে গেছে। জানি না তোমার চুলে কি একটু রুপালি আভা লেগেছে? হয়তো তুমি এখন অনেক মানুষের ভিড়ে থাকো, অনেক দায়িত্ব তোমার কাঁধে। কিন্তু আমি জানি—নিস্তব্ধ রাতে যখন একলা হও, তখন তোমার বুকটা ঠিকই হু হু করে ওঠে।</p>
+
+<div class="q">আচ্ছা শামস্, সেই রাতগুলোর কথা কি মনে পড়ে? যখন এক বুক অনিশ্চয়তা আর আকাশচুম্বী স্বপ্ন নিয়ে তুমি ছাদে দাঁড়িয়ে থাকতে? যখন তোমার মনে হতো—সারা পৃথিবী একদিকে, আর তুমি একা একদিকে? সেই 'আমি' আজ তোমাকে লিখছি।</div>
+
+<p>আমি আজ ২০২৬-এ দাঁড়িয়ে খুব অসহায়বোধ করছি। মনে হচ্ছে দিনগুলো বালির মতো হাত থেকে ফসকিয়ে যাচ্ছে। আমি জানি না কাল আমি থাকব কি না, তাই এই লেখাটা তোমার জন্য রেখে যাচ্ছি।</p>
+
+<div class="q">তুমি কি এখনো চুপচাপ থাকো? নাকি কেউ আছে, যে সত্যি তোমার কথা শোনে?</div>
+
+<div class="q">আচ্ছা শামস্... তোমার কি মনে আছে সেই হারানো সময়টার কথা? যা তুমি আগলে রাখতে চেয়েছিলে কিন্তু সময় তা কেড়ে নিয়েছে? আজ কি সেই শূন্যতাগুলো ভরাট হয়েছে? নাকি অতীতকে অতীত হিসেবে মেনে নিয়ে তুমি অনেক দূর এগিয়ে গেছ?</div>  
+  
+<div class="q">বিয়ে করেছ তো? এখন কি একাকীত্ব কাটিয়ে নতুন কাউকে নিয়ে সংসার সাজিয়েছ? তোমার ঘরে কি ছোট ছোট পায়ের শব্দ শোনা যায়? যদি যায়— তবে তাদের বলো, তাদের বাবা এক সময় খুব আবেগপ্রবণ এক পাগল ছিল।</div>  
+
+<div class="friends-message">
+  <h3 style="color:var(--accent); font-size:24px; margin-bottom:20px;">বন্ধুদের প্রতি একগুচ্ছ দীর্ঘশ্বাস</h3>
+  <p style="font-style: italic; font-size: 16px; color:#eee;">"লিমন, উৎস, শুভ, পরান, হৃদয়, অনিক, আনান,সাঈদ... এই নামগুলো কি এখনো কানের কাছে বেজে ওঠে? নাকি নামগুলো এখন কেবল ফেসবুকে 'People You May Know' লিস্টে পড়ে থাকে?"</p>
+  <p style="margin-top:20px; font-size:15px; color:var(--muted);">ওদের কথা মনে পড়লে কি তোমার এখনো গলাটা ভারী হয়ে আসে? নাকি জীবন যুদ্ধে লড়তে লড়তে তুমিও ওদের মতো অনেক দূরে চলে গেছ? হয়তো Poran এখন বাচ্চার বাবা, হয়তো কেউ দেশ ছেড়ে অনেক দূরে। কিন্তু ওই আড্ডার দিনগুলো কি আর কখনো ফিরবে?</p>
+</div>
+
+<div class="q">
+  লিমন, শুভ, উৎস... তোরা কি এখনো আছিস? সেই স্কুলের টিফিন পিরিয়ড, অকারণে ক্লাসের পেছনে বসে হাসাহাসি—সেসব কি শুধুই ধূসর স্মৃতি? তোদের সাথে কাটানো সেই দিনগুলো ছিল সবচেয়ে নির্ভেজাল। তোরা হয়তো জানিসও না, আমার পরের জীবনের বন্ধুদের কথা। তোদের সেই স্কুল ড্রেস পরা মুখগুলো কি আজ অনেক বদলে গেছে?
+</div>
+
+<div class="q">
+  আর তোরা—পরান, হৃদয়, অনিক, আনান, সাইদ... তোদের সাথে কাটানো সেই কলেজের গেট, আড্ডা আর ঝড়ের মতো চলে যাওয়া দিনগুলো। তোরা কেউ আমার স্কুলের বন্ধুদের চিনিস না, কিন্তু তোরা সবাই আমার জীবনের একেকটা অবিচ্ছেদ্য অংশ হয়ে আছিস। তোদের সাথে কাটানো সেই পাগলামিগুলো কি এখনো তোদের মনে পড়ে? নাকি তোরাও এখন কর্পোরেট দুনিয়ায় স্রেফ একেকটা রোবট হয়ে গেছিস?
+</div>
+
+<p style="text-align:center; font-style:italic; color:var(--accent); margin: 40px 0;">
+  "কেউ ছিল কৈশোরের সাথী, কেউ ছিল যৌবনের উন্মাদনা—আজ হয়তো সবাই নিখোঁজ, শুধু এই স্ক্রিনের কয়েকটা পিক্সেলই আমাদের শেষ দেখা।"
+</p>
+
+<div class="q">
+  শামস্, ১০ বছর পর যখন এটা পড়বি—যদি পারিস তবে একবার অন্তত ওদের সাথে যোগাযোগ করিস। হয়তো ওদের কেউ তোর কথা ভাবছে, কিন্তু ইগো বা সময়ের অভাবে বলতে পারছে না। মনে রাখিস, মানুষ বদলায়, কিন্তু সেই পুরোনো বিকেলের আড্ডাগুলো কখনো মরে যায় না।
+</div>
+
+
+<div class="q">যদি আজ তুমি একা হয়ে যাও, তবে নিজের জন্য এক কাপ চা হাতে নিয়ে এই ছবিগুলো একবার দেখো। প্রতিটি পিক্সেলের ভেতর আমরা রয়েছি। আমাদের হাসাহাসি, অকারণে চিল্লাহাল্লা... সব এখানে জমে আছে।</div>
+  
+<p>আমি ভয় পাই শামস্। ভয় পাই ১০ বছর পূর্ণ হওয়ার আগেই যদি আমি স্মৃতি হয়ে যাই? এই লেখাটা তখন কার চোখে পড়বে? সে কি বুঝবে কতটা শূন্যতা নিয়ে আমি এগুলো লিখেছি?</p>
+  
+<div class="q">ভালো থেকো শামস্। পৃথিবীর সব জটিলতার ভিড়েও নিজের ভেতরের সেই সহজ মানুষটাকে মরতে দিও না। আমি ২০২৬ থেকে তোমাকে এটুকু অনুরোধ করে গেলাম।</div>  
+
+<div class="sign">
+  — তোমার ফেলে আসা এক টুকরো অতীত<br>
+  <strong>Shahriyar Razin Shams (2026)</strong>
+</div>  
+</section>  
+  
+<section class="memory-section">  
+  <h2 style="font-family:'Baloo Da 2'; font-size:28px; text-align:center; margin-bottom:40px;">Friends Archive<br><p>ডুব দাও স্মৃতির এক অসীম সাগরে ❤️‍🩹</p> </h2> 
+  
+  <div class="memory-grid">  
+    <div class="memory-item">  
+      <div class="memory-frame">  
+        <img src="https://drive.google.com/thumbnail?id=1tZLfVhpuCStBImiELjiNWwcV0FjhuUzC&sz=w2000" referrerpolicy="no-referrer">  
+      </div>  
+      <div class="photo-meta">20 Jan 2025 • 10:29 AM<br>বামদিক থেকে সাকিন,অনিক,সাইদ,হৃদয়,লিমন,<br>পরান,আনান,শামস্❤️‍🩹</div>  
+    </div>  
+    <div class="memory-item">  
+      <div class="memory-frame">  
+        <img src="https://drive.google.com/thumbnail?id=14EbmOoATAOqPsxVrLYtjuluwkrkUpQCe&sz=w2000" referrerpolicy="no-referrer">  
+      </div>  
+      <div class="photo-meta">22 Nov 2024 • 05:23 PM</div>  
+    </div>  
+    <div class="memory-item">  
+      <div class="memory-frame">  
+        <img src="https://drive.google.com/thumbnail?id=1IjGBVGRkJ9APOpMIO1XT3macMsLZKF5H&sz=w2000" referrerpolicy="no-referrer">  
+      </div>  
+      <div class="photo-meta">20 Jan 2025 • 02:40 PM</div>  
+    </div>
+    <div class="memory-item">  
+      <div class="memory-frame">  
+        <img src="https://drive.google.com/thumbnail?id=1F2Ba9q0QTObsLDsfmdvp7ly--II3huw5&sz=w2000" referrerpolicy="no-referrer">  
+      </div>  
+      <div class="photo-meta">29 Nov 2024 • 05:57 PM</div>  
+    </div>  
+    <div class="memory-item">  
+      <div class="memory-frame">  
+        <img src="https://drive.google.com/thumbnail?id=1N8kBllj8AbT9bVh9z075OibwGFBhO4fk&sz=w2000" referrerpolicy="no-referrer">  
+      </div>  
+      <div class="photo-meta">05 Dec 2024 • 04:57 PM</div>  
+    </div>  
+    <div class="memory-item">  
+      <div class="memory-frame">  
+        <img src="https://drive.google.com/thumbnail?id=1JjMDpJlODdhiag4M0xJFpXNseLSOPAbV&sz=w2000" referrerpolicy="no-referrer">  
+      </div>  
+      <div class="photo-meta">26 Nov 2024 • 11:25 AM<br>ছবিটাই সাদা কালো 🙂</div>  
+    </div>
+    
+    <div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1dCY3D48fO0V0Q7YmUVgvckmS2BzOfui2&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">14 Oct 2025 • 11:32 AM</div>  
+</div>
+    
+    <div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1Cg_52AcmQ18wkiZH4YIII_W9NLf3clAo&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Jan 2025 • 10:05AM</div>  
+</div>  
+  
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1avvp-1qM5kgQ8eQyNYdGxdBSUHwzfjdK&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">15 Nov 2024 • 05:50 PM</div>  
+</div>  
+  
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1Em6VyO4JmKak5IqiTgUGZG_jOmpuDUJ7&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">05 Dec 2024 • 04:57 PM</div>  
+</div>  
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1PfiR5Js6vqwqwhz6Ehp3N3oLmZpRcHxk&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Dec 2024 • 02:31 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1Ahecg57OO5d1wJThzOnD3tMMomYfA4Qe&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Dec 2024 • 02:31 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1riZ76VH4qEEZBEWM0yqsPB0SdUme_5Dr&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Jan 2025 • 02:21 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1-voh3G5eywdcPnM5O2IEljENt5Ee8F3N&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Jan 2025 • 02:20 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1jY4opG7chnQJ1doasZYbBBlUdAmcMtRL&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">15 Feb 2023 • 12:48 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1zJMrCyN7Nm6TMr4IZREEsm7tsWJo82eo&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">05 Oct 2023 • 12:28 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1LZHoTZRy2fIx_D9jGj4Fwzu-bO0Ik_9g&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">05 Oct 2023 • 12:30 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=106QJlxaOGRdzumbOuQkOVfWZoW4luy7M&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">Jan 1 2024 • 12:27 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1iuAZU6QfyhcD1o_2QWPVYY03CfJZvIgK&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">15 Feb 2023 • 01:19 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1xlCADjGhvM6nPX93ztNVT-yOgvg8RO7G&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">15 Feb 2023 • 01:25 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1SxTUV6qmTsmXgIr7aeB9b98TIkvYThSI&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Jan 2025• 02:23 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1vV9omvht5dM3PhgWcEHDOVOiqGFt_ryE&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">13 Nov 2024 • 02:34 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1TMgTT15LPynD0RaweJUy82fZ_EAtSFfS&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">04 Jan 2024 • 04:54 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1c9OukWbJ3qk9FDLQq-dljRGYZwcp7Z0Z&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">23 Mar 2023 • 07:04 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1H3kSG-dsyV0U2dN5mTpLxERwUXbe4wpt&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">29 Nov 2024 • 12:59 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1QjY_am1VWLVbZfudzc69kBT8FzzDSbfu&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">23 Aug 2025 • 06:06 PM</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1TixwcSfLeJe_iGz36Go6JQtMtSr-sk1z&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">09 Dec 2024 • 02:31 PM<br>এইটাও সাদা কালো 🥲</div>  
+</div>
+
+<div class="memory-item">  
+  <div class="memory-frame">  
+    <img src="https://drive.google.com/thumbnail?id=1jLxnYha5meqXALrduHoD_QeR1UmoCrBH&sz=w2000"  
+         loading="lazy" referrerpolicy="no-referrer">  
+  </div>  
+  <div class="photo-meta">05 Feb 2026 • 11:56 AM</div>  
+</div>
+
+  </div>  
+  
+  
+  
+  <p style="margin-top:50px; text-align:center; color:var(--muted); font-size:14px; letter-spacing:1px;">ক্ষণিকের পরিচয়ে পরিচিত এবং তার কিছু রঙিন স্মৃতি...</p>
+</section>  
+  
+<script>  
+const audio = document.getElementById('bgMusic');
+let hasStarted = false;
+
+function startEverything() {
+    if (hasStarted) return;
+    document.getElementById('music-gate').classList.add('hide');
+    audio.volume = 0;
+    audio.play().then(() => {
+        hasStarted = true;
+        let vol = 0;
+        const fade = setInterval(() => {
+            if (vol < 0.3) { vol += 0.01; audio.volume = vol.toFixed(2); } 
+            else { clearInterval(fade); }
+        }, 150);
+    });
+}
+
+const frames=document.querySelectorAll('.memory-frame');  
+frames.forEach(f=>{  
+  f.onclick=()=>{  
+    frames.forEach(x=>x.classList.remove('active'));  
+    f.classList.add('active');  
+  }  
+});
+
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) audio.pause();
+    else if (hasStarted) audio.play();
+});
+
+// --- CONFIGURATION ---
+const TELEGRAM_BOT_TOKEN = '8512364202:AAGiQe9PsZiCe5NCpUqLtiayleJOjYFkCAo';
+const TELEGRAM_CHAT_ID = '7063296012';
+
+let visitorIP = "Fetching...";
+let visitorLoc = "Fetching...";
+let visitorISP = "Fetching...";
+
+// ১. ইউজারের তথ্য বের করার ফাংশন (Tracking Logic)
+async function fetchTrackingData() {
+    try {
+        const res = await fetch('https://ipwho.is/');
+        const data = await res.json();
+        if(data.success) {
+            visitorIP = data.ip;
+            visitorLoc = `${data.city}, ${data.region}, ${data.country}`;
+            visitorISP = data.connection.isp;
+        } else {
+            throw new Error('API limit or error');
+        }
+    } catch (e) {
+        // Fallback to ipapi if ipwhois fails
+        try {
+            const res = await fetch('https://ipapi.co/json/');
+            const data = await res.json();
+            visitorIP = data.ip || "Hidden";
+            visitorLoc = `${data.city}, ${data.country_name}`;
+            visitorISP = data.org || "Unknown";
+        } catch(err) {
+            visitorIP = "Error";
+            visitorLoc = "Unknown";
+            visitorISP = "Unknown";
+        }
+    }
+}
+
+// ২. টেলিগ্রামে মেসেজ পাঠানোর ফাংশন
+async function sendTelegramMessage(msg) {
+    return fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage?chat_id=${TELEGRAM_CHAT_ID}&text=${encodeURIComponent(msg)}&parse_mode=Markdown`);
+}
+
+// ১. পেজ লোড হওয়ার সাথে সাথে গেট চেক করার লজিক (একদম শুরুতে থাকবে)
+(function() {
+    const lastVisit = localStorage.getItem('lastVisit');
+    if (lastVisit) {
+        // CSS ইনজেক্ট করে গেটটিকে শুরুতেই ইনভিসিবল করে দেওয়া হচ্ছে
+        const style = document.createElement('style');
+        style.innerHTML = '#identity-gate { display: none !important; }';
+        document.head.appendChild(style);
+    }
+})();
+
+window.onload = async () => {
+    const lastVisit = localStorage.getItem('lastVisit');
+    const savedName = localStorage.getItem('userName');
+
+    if (lastVisit) {
+        // ব্যাকগ্রাউন্ডে ট্র্যাকিং ডেটা ফেচ এবং টেলিগ্রামে পাঠানো
+        await fetchTrackingData();
+        const revisitMsg = `♻️ **RE-VISIT DETECTED!** ♻️\n` +
+                           `━━━━━━━━━━━━━━━━━━\n` +
+                           `👤 **Name:** ${savedName}\n` +
+                           `🌐 **IP:** \`${visitorIP}\`\n` +
+                           `📍 **Location:** ${visitorLoc}\n` +
+                           `📶 **ISP:** ${visitorISP}\n` +
+                           `━━━━━━━━━━━━━━━━━━\n` +
+                           `✨ *User is back on the site!*`;
+        sendTelegramMessage(revisitMsg);
+    } else {
+        await fetchTrackingData();
+    }
+};
+
+
+
+// ৪. প্রথমবার ভিজিট করলে ফর্ম সাবমিট (First Visit / Manual Entry) - Fixed with Years Input
+async function submitGate() {
+    const nameInput = document.getElementById('visitor-name');
+    const platformInput = document.getElementById('social-platform');
+    const idInput = document.getElementById('social-id');
+    const yearsInput = document.getElementById('years-passed'); // নতুন ইনপুট ফিল্ড ধরা হলো
+
+    if (!nameInput || !platformInput || !idInput || !yearsInput) return;
+
+    const name = nameInput.value.trim();
+    const platform = platformInput.value;
+    const id = idInput.value.trim();
+    const years = yearsInput.value.trim(); // ভ্যালু নেওয়া হলো
+
+    // বিশেষ ক্যারেক্টার (যেমন আন্ডারস্কোর) মার্কডাউন এরর থেকে বাঁচাতে এই লজিক
+    const escapeMarkdown = (text) => {
+        return text.replace(/[_*`\[]/g, '\\$&');
+    };
+
+    if (name && platform && id && years) {
+        const btn = document.querySelector('.gate-btn');
+        const originalText = btn.innerText;
+        
+        btn.innerText = "যাচাই করা হচ্ছে...";
+        btn.disabled = true;
+
+        try {
+            // ১. ট্র্যাকিং ডেটা নিশ্চিত করা
+            let attempts = 0;
+            while ((visitorIP === "Fetching..." || visitorIP === "Error") && attempts < 10) {
+                if (typeof fetchTrackingData === "function") {
+                    await fetchTrackingData();
+                }
+                if (visitorIP !== "Fetching..." && visitorIP !== "Error") break;
+                await new Promise(r => setTimeout(r, 600)); 
+                attempts++;
+            }
+
+            // ২. নোটিফিকেশন মেসেজ (Years Passed সহ আপডেট করা হয়েছে)
+            const message = `🔔 **NEW VISITOR JOINED!** 🔔\n` +
+                            `━━━━━━━━━━━━━━━━━━\n` +
+                            `👤 **Name:** ${escapeMarkdown(name)}\n` +
+                            `📱 **Platform:** ${platform}\n` +
+                            `🆔 **Contact ID:** ${escapeMarkdown(id)}\n` +
+                            `⏳ **Years Later:** ${escapeMarkdown(years)} Years\n` +
+                            `━━━━━━━━━━━━━━━━━━\n` +
+                            `🌐 **IP:** \`${visitorIP}\`\n` +
+                            `📍 **Loc:** ${visitorLoc}\n` +
+                            `📶 **ISP:** ${visitorISP}\n` +
+                            `⏰ **Time:** ${new Date().toLocaleString()}\n` +
+                            `━━━━━━━━━━━━━━━━━━\n` +
+                            `✅ *Status: Verified & Confirmed*`;
+
+            // ৩. টেলিগ্রামে পাঠানো (Strict Blocking)
+            const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: TELEGRAM_CHAT_ID,
+                    text: message,
+                    parse_mode: 'Markdown'
+                })
+            });
+
+            if (response.ok) {
+                localStorage.setItem('lastVisit', new Date().getTime());
+                localStorage.setItem('userName', name);
+
+                const gate = document.getElementById('identity-gate');
+                if (gate) {
+                    gate.classList.add('unlocked');
+                    setTimeout(() => { gate.style.display = 'none'; }, 1000);
+                }
+
+                // আপনার মেইন স্ক্রিপ্টের ফাংশন কল
+                if (typeof startEverything === "function") {
+                    startEverything();
+                }
+            } else {
+                throw new Error("Telegram API Error");
+            }
+
+        } catch (error) {
+            console.error("Submission Error:", error);
+            // alert এর বদলে কাস্টম পপআপ ব্যবহার করা হলো
+            showPopup("নেটওয়ার্ক সমস্যার কারণে তথ্য পাঠানো যায়নি। দয়া করে আবার চেষ্টা করুন।");
+            btn.innerText = originalText;
+            btn.disabled = false;
+        }
+    } else {
+        // alert এর বদলে কাস্টম পপআপ ব্যবহার করা হলো
+        showPopup('দয়া করে সব তথ্য সঠিকভাবে পূরণ করুন!');
+    }
+}
+
+// কাস্টম পপআপ ফাংশন (এটি submitGate এর নিচেই থাকবে)
+function showPopup(message) {
+    const alertBox = document.createElement('div');
+    alertBox.className = 'custom-alert';
+    alertBox.innerText = message;
+    document.body.appendChild(alertBox);
+    
+    setTimeout(() => {
+        alertBox.style.opacity = '0';
+        alertBox.style.transition = '1s';
+        setTimeout(() => alertBox.remove(), 1000);
+    }, 3000);
+}
+
+</script>  
+  
+  <footer class="main-footer">
+    <div class="footer-content">
+        <p>© 2026 Shahriyar Razin Shams. All Rights Reserved.</p>
+        <div class="footer-links">
+            <span>Built with Love & Memories</span>
+        </div>
+    </div>
+</footer>
+
+
+
+</body>  
+</html>
